@@ -1,0 +1,8 @@
+.git
+.gitignore
+README.md
+.env
+docker-compose.yml
+Dockerfile
+init-db.sql
+*.log

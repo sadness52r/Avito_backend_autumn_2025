@@ -1,0 +1,299 @@
+### 1. Создание команды "backend"
+POST http://localhost:8080/team/add
+Content-Type: application/json
+
+{
+  "team_name": "backend",
+  "members": [
+    {
+      "user_id": "u1",
+      "username": "Alice",
+      "is_active": true
+    },
+    {
+      "user_id": "u2", 
+      "username": "Bob",
+      "is_active": true
+    },
+    {
+      "user_id": "u3",
+      "username": "Charlie",
+      "is_active": true
+    }
+  ]
+}
+
+### 2. Создание команды "frontend"
+POST http://localhost:8080/team/add
+Content-Type: application/json
+
+{
+  "team_name": "frontend",
+  "members": [
+    {
+      "user_id": "u4",
+      "username": "David",
+      "is_active": true
+    },
+    {
+      "user_id": "u5",
+      "username": "Eve",
+      "is_active": true
+    }
+  ]
+}
+
+### 3. Получить команду backend
+GET http://localhost:8080/team/get?team_name=backend
+
+### 4. Получить команду frontend
+GET http://localhost:8080/team/get?team_name=frontend
+
+### 5. Попробовать получить несуществующую команду "meow"
+GET http://localhost:8080/team/get?team_name=meow
+
+### 6. Попробовать создать существующую команду (должна быть ошибка)
+POST http://localhost:8080/team/add
+Content-Type: application/json
+
+{
+  "team_name": "backend",
+  "members": [
+    {
+      "user_id": "u6",
+      "username": "Frank",
+      "is_active": true
+    }
+  ]
+}
+
+### 7. Деактивировать пользователя Bob
+POST http://localhost:8080/users/setIsActive
+Content-Type: application/json
+
+{
+  "user_id": "u2",
+  "is_active": false
+}
+
+### 8. Проверить что Bob деактивирован
+GET http://localhost:8080/team/get?team_name=backend
+
+### 9. Создать PR от Alice (автоматически назначит ревьюверов из команды backend)
+POST http://localhost:8080/pullRequest/create
+Content-Type: application/json
+
+{
+  "pull_request_id": "pr-1001",
+  "pull_request_name": "Add search functionality",
+  "author_id": "u1"
+}
+
+### 10. Создать второй PR от Alice
+POST http://localhost:8080/pullRequest/create
+Content-Type: application/json
+
+{
+  "pull_request_id": "pr-1002", 
+  "pull_request_name": "Fix authentication bug",
+  "author_id": "u1"
+}
+
+### 11. Попробовать создать PR с существующим ID (должна быть ошибка)
+POST http://localhost:8080/pullRequest/create
+Content-Type: application/json
+
+{
+  "pull_request_id": "pr-1001",
+  "pull_request_name": "Duplicate PR",
+  "author_id": "u1"
+}
+
+### 12. Создать PR от David (из команды frontend)
+POST http://localhost:8080/pullRequest/create
+Content-Type: application/json
+
+{
+  "pull_request_id": "pr-1003",
+  "pull_request_name": "Update UI components",
+  "author_id": "u4"
+}
+
+### 13. Получить PR где пользователь назначен ревьювером (Charlie)
+GET http://localhost:8080/users/getReview?user_id=u3
+
+### 14. Получить PR где пользователь назначен ревьювером (Eve)
+GET http://localhost:8080/users/getReview?user_id=u5
+
+### 15. Переназначить ревьювера в PR-1001 (заменить одного из назначенных)
+POST http://localhost:8080/pullRequest/reassign
+Content-Type: application/json
+
+{
+  "pull_request_id": "pr-1001",
+  "old_user_id": "u3"
+}
+
+### 16. Попробовать переназначить не назначенного ревьювера (должна быть ошибка)
+POST http://localhost:8080/pullRequest/reassign
+Content-Type: application/json
+
+{
+  "pull_request_id": "pr-1001", 
+  "old_user_id": "u4"
+}
+
+### 17. Замержить PR-1001
+POST http://localhost:8080/pullRequest/merge
+Content-Type: application/json
+
+{
+  "pull_request_id": "pr-1001"
+}
+
+### 18. Попробовать переназначить ревьювера в замерженном PR (должна быть ошибка)
+POST http://localhost:8080/pullRequest/reassign
+Content-Type: application/json
+
+{
+  "pull_request_id": "pr-1001",
+  "old_user_id": "u2"
+}
+
+### 19. Замержить PR-1001 еще раз (идемпотентная операция)
+POST http://localhost:8080/pullRequest/merge
+Content-Type: application/json
+
+{
+  "pull_request_id": "pr-1001"
+}
+
+### 20. Получить PR пользователя после изменений
+GET http://localhost:8080/users/getReview?user_id=u3
+
+### 21. Попробовать получить несуществующую команду (должна быть ошибка)
+GET http://localhost:8080/team/get?team_name=nonexistent
+
+### 22. Попробовать изменить активность несуществующего пользователя (должна быть ошибка)
+POST http://localhost:8080/users/setIsActive
+Content-Type: application/json
+
+{
+  "user_id": "u999",
+  "is_active": false
+}
+
+### 23. Попробовать создать PR от несуществующего пользователя (должна быть ошибка)
+POST http://localhost:8080/pullRequest/create
+Content-Type: application/json
+
+{
+  "pull_request_id": "pr-9999",
+  "pull_request_name": "Invalid PR", 
+  "author_id": "u999"
+}
+
+### 24. Создание PR когда доступен только 1 кандидат
+POST http://localhost:8080/team/add
+Content-Type: application/json
+
+{
+  "team_name": "small_team",
+  "members": [
+    {
+      "user_id": "s1",
+      "username": "Solo Developer",
+      "is_active": true
+    },
+    {
+      "user_id": "s2", 
+      "username": "Only Reviewer",
+      "is_active": true
+    }
+  ]
+}
+
+### 25. Создаем PR - должен назначить только 1 ревьювера (s2)
+POST http://localhost:8080/pullRequest/create
+Content-Type: application/json
+
+{
+  "pull_request_id": "pr-small-1",
+  "pull_request_name": "Small team feature",
+  "author_id": "s1"
+}
+
+### 26. Создание PR когда нет доступных кандидатов
+POST http://localhost:8080/team/add
+Content-Type: application/json
+
+{
+  "team_name": "solo_team", 
+  "members": [
+    {
+      "user_id": "alone",
+      "username": "Lone Developer",
+      "is_active": true
+    }
+  ]
+}
+
+### 27. Создаем PR - должен назначить 0 ревьюверов
+POST http://localhost:8080/pullRequest/create
+Content-Type: application/json
+
+{
+  "pull_request_id": "pr-solo-1",
+  "pull_request_name": "Solo work",
+  "author_id": "alone"
+}
+
+### 28. Создание PR когда все кроме автора неактивны
+POST http://localhost:8080/team/add
+Content-Type: application/json
+
+{
+  "team_name": "inactive_team",
+  "members": [
+    {
+      "user_id": "active1",
+      "username": "Active Author", 
+      "is_active": true
+    },
+    {
+      "user_id": "inactive1",
+      "username": "Inactive Reviewer 1",
+      "is_active": false
+    },
+    {
+      "user_id": "inactive2", 
+      "username": "Inactive Reviewer 2",
+      "is_active": false
+    }
+  ]
+}
+
+### 29. Создаем PR - должен назначить 0 ревьюверов (все неактивны)
+POST http://localhost:8080/pullRequest/create
+Content-Type: application/json
+
+{
+  "pull_request_id": "pr-inactive-1",
+  "pull_request_name": "Work with inactive team",
+  "author_id": "active1"
+}
+
+### 30. Статистика системы
+GET http://localhost:8080/stats/system
+
+### 31. Статистика по пользователям
+GET http://localhost:8080/stats/users
+
+### 32. Статистика по PR
+GET http://localhost:8080/stats/prs
+
+### 33. Топ ревьюверов (по умолчанию 10)
+GET http://localhost:8080/stats/top-reviewers
+
+### 34. Топ ревьюверов (ограничение 3)
+GET http://localhost:8080/stats/top-reviewers?limit=3
