@@ -8,8 +8,8 @@ Backend service for assigning pull request reviewers to team members.
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/pr-reviewer.git
-   cd pr-reviewer
+   https://github.com/sadness52r/Avito_backend_autumn_2025.git
+   cd Avito_backend_autumn_2025
 
 2. **Run services**
     ```bash
