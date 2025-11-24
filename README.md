@@ -29,10 +29,12 @@ Backend service for assigning pull request reviewers to team members.
 
 **Integration tests:**
 First of all you need to set your test env (check /tests/.env.example) and run app:
+
     ```bash
     docker-compose up --build
 
 To run tests you need enter:
+
     ```bash
     cd tests
     make test-env
